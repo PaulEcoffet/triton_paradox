@@ -25,9 +25,9 @@ def get_sounds(source):
         sounds[note] = s
     return sounds
 
-def gen_stim(nb_per_interval):
+def gen_stim(nb_per_interval, intervals_to_do):
     stim = []
-    intervals = list(range(1, 12)) * nb_per_interval
+    intervals = intervals_to_do * nb_per_interval
     note = random.randint(0, 11)
     note2 = (note + intervals[0]) % 12
     stim.append((note, note2))
@@ -36,7 +36,15 @@ def gen_stim(nb_per_interval):
             note = random.randint(0, 11)
             note2 = (note + interval) % 12
         stim.append((note, note2))
+    random.shuffle(stim)
+    return stim
 
+def gen_all_stim(nb, notes, intervals):
+    stim = []
+    for note in notes:
+        for interval in intervals:
+            stim.extend([(note, (note + interval) % 12)] * nb)
+    random.shuffle(stim)
     return stim
 
 def do_trial(stim, window, sounds):
@@ -48,18 +56,26 @@ def do_trial(stim, window, sounds):
     pygame.time.wait(1000)
     for i in range(2):
         window.fill(black)
-        #txt = font.render(notes[stim[i]], True, white)
-        #pos = txt.get_rect(center=window.get_rect().center)
-        #window.blit(txt, pos)
-        ch.play(sounds[notes[stim[i]]])
+        txt = font.render(notes[stim[i]], True, white)
+        pos = txt.get_rect(center=window.get_rect().center)
+        window.blit(txt, pos)
+        sound = sounds[notes[stim[i]]]
         pygame.display.flip()
-        while ch.get_busy():
-            pygame.time.delay(50)
+        sound.play()
+        start = pygame.time.get_ticks()
+        while pygame.time.get_ticks() - start < 490:
+            pygame.time.wait(15)
+        sound.stop()
+        window.fill(black)
+        txt = font.render(str(pygame.time.get_ticks() - start), True, white)
+        window.blit(txt, pos)
+        pygame.display.flip()
         if i == 0:  # If first then wait (interstim)
-            pygame.time.delay(300)
+            pygame.time.wait(300)
 
     rep = None
     start = pygame.time.get_ticks()
+    pygame.event.get()
     while rep is None:
         event = pygame.event.wait()
         if event.type == pl.KEYDOWN:
@@ -74,19 +90,39 @@ def do_trial(stim, window, sounds):
 
 def expe():
     subject = raw_input("subject> ")
-    cond = raw_input("condition [f]: plat, [c]: cloche> ")
-    cond = 'c'  # TODO Implement different conditions
+    #cond = raw_input("condition [f]: plat, [c]: cloche> ")
+    #cond = 'c'  # TODO Implement different conditions
+    pygame.mixer.pre_init(44100,-16,2, 1024)
     pygame.init()
-    window = pygame.display.set_mode([0, 0], pl.FULLSCREEN)
+    window = pygame.display.set_mode([400, 400])
     sounds = get_sounds(source)
-    stims = gen_stim(nb_stim_per_interval)
+
+
     with open('results/'+subject+'_'+str(int(time.time()))+'.csv', 'w') as f:
+    ###########
+    # PHASE 1 #
+    ###########
+        cond = '1'
+        stims = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11])
         print ('subject', 'cond', 'note1', 'note2', 'resp', 'rt', sep=',', file=f)
         for stim in stims:
             resp, rt = do_trial(stim, window, sounds)
             if resp == 'Quit':
-                break
+                raise Exception()
             print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
+
+    ###########
+    # PHASE 2 #
+    ###########
+        stims = gen_all_stim(3, list(range(12)), [5, 6, 7])
+        for phase in [2,3]:
+            cond = str(phase)
+            random.shuffle(stims)
+            for stim in stims:
+                resp, rt = do_trial(stim, window, sounds)
+                if resp == 'Quit':
+                    raise Exception()
+                print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
 try:
     expe()
 finally:
