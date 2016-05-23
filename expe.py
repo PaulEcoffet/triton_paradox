@@ -56,22 +56,22 @@ def do_trial(stim, window, sounds):
     pygame.time.wait(1000)
     for i in range(2):
         window.fill(black)
-        txt = font.render(notes[stim[i]], True, white)
-        pos = txt.get_rect(center=window.get_rect().center)
-        window.blit(txt, pos)
+        #txt = font.render(notes[stim[i]], True, white)
+        #pos = txt.get_rect(center=window.get_rect().center)
+        #window.blit(txt, pos)
         sound = sounds[notes[stim[i]]]
         pygame.display.flip()
         sound.play()
         start = pygame.time.get_ticks()
-        while pygame.time.get_ticks() - start < 490:
+        while pygame.time.get_ticks() - start < 390:
             pygame.time.wait(15)
         sound.stop()
         window.fill(black)
-        txt = font.render(str(pygame.time.get_ticks() - start), True, white)
-        window.blit(txt, pos)
+        #txt = font.render(str(pygame.time.get_ticks() - start), True, white)
+        #window.blit(txt, pos)
         pygame.display.flip()
         if i == 0:  # If first then wait (interstim)
-            pygame.time.wait(300)
+            pygame.time.wait(100)
 
     rep = None
     start = pygame.time.get_ticks()
@@ -94,14 +94,32 @@ def expe():
     #cond = 'c'  # TODO Implement different conditions
     pygame.mixer.pre_init(44100,-16,2, 1024)
     pygame.init()
-    window = pygame.display.set_mode([400, 400])
+    window = pygame.display.set_mode([0, 0], pl.FULLSCREEN)
+    pygame.mouse.set_visible(False)
     sounds = get_sounds(source)
+    font = pygame.font.SysFont('sans', 40)
 
 
-    with open('results/'+subject+'_'+str(int(time.time()))+'.csv', 'w') as f:
+    with open('results/'+str(int(time.time()))+'_'+subject+'.csv', 'w') as f:
     ###########
     # PHASE 1 #
     ###########
+    
+        window.fill(black)
+        blabla = font.render("Appuyer sur 'f' si l'intervalle est descendant, sur 'j' s'il est montant", True, white)
+        valid = font.render("Veuillez appuyer sur entree quand vous etes pret", True, white)
+        pos_bla = blabla.get_rect(midbottom=window.get_rect().center)
+        pos_valid = valid.get_rect(midtop=window.get_rect().center)
+        window.blit(blabla, pos_bla)
+        window.blit(valid, pos_valid)
+        pygame.display.flip()
+        pygame.event.get() # clear buffer
+        next_step = False
+        while not next_step:
+            e = pygame.event.wait()
+            if e.type == pl.KEYDOWN and e.key == pl.K_RETURN:
+                next_step = True
+
         cond = '1'
         stims = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11])
         print ('subject', 'cond', 'note1', 'note2', 'resp', 'rt', sep=',', file=f)
@@ -116,6 +134,16 @@ def expe():
     ###########
         stims = gen_all_stim(3, list(range(12)), [5, 6, 7])
         for phase in [2,3]:
+            valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
+            pos_valid = valid.get_rect(midtop=window.get_rect().center)
+            window.blit(valid, pos_valid)
+            pygame.display.flip()
+            pygame.event.get() # clear buffer
+            next_step = False
+            while not next_step:
+                e = pygame.event.wait()
+                if e.type == pl.KEYDOWN and e.key == pl.K_RETURN:
+                    next_step = True
             cond = str(phase)
             random.shuffle(stims)
             for stim in stims:
