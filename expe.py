@@ -36,7 +36,7 @@ def gen_stim(nb_per_interval, intervals_to_do):
             note = random.randint(0, 11)
             note2 = (note + interval) % 12
         stim.append((note, note2))
-    random.shuffle(stim)
+    #random.shuffle(stim)
     return stim
 
 def gen_all_stim(nb, notes, intervals):
@@ -44,7 +44,7 @@ def gen_all_stim(nb, notes, intervals):
     for note in notes:
         for interval in intervals:
             stim.extend([(note, (note + interval) % 12)] * nb)
-    random.shuffle(stim)
+    #random.shuffle(stim)
     return stim
 
 def do_trial(stim, window, sounds):
@@ -121,36 +121,55 @@ def expe():
                 next_step = True
 
         cond = '1'
-        stims = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11])
+        stims1 = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11]) #24
+        stims2 = gen_all_stim(3, list(range(12)), [5, 6, 7])  #108
+        all_stims=stims1+stims2
+        random.shuffle(all_stims)
+        nb_stim=len(all_stims)  #132
         print ('subject', 'cond', 'note1', 'note2', 'resp', 'rt', sep=',', file=f)
-        for stim in stims:
+        i=0
+        for stim in all_stims:
+            i=i+1
             resp, rt = do_trial(stim, window, sounds)
             if resp == 'Quit':
                 raise Exception()
             print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
+            if i == nb_stim/3+1:
+                valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
+                pos_valid = valid.get_rect(midtop=window.get_rect().center)
+                window.blit(valid, pos_valid)
+                pygame.display.flip()
+                pygame.event.get() # clear buffer
+                next_step = False
+                while not next_step:
+                    e = pygame.event.wait()
+                    if e.type == pl.KEYDOWN and e.key == pl.K_RETURN:
+                        next_step = True
+                i=0
 
     ###########
     # PHASE 2 #
     ###########
-        stims = gen_all_stim(3, list(range(12)), [5, 6, 7])
-        for phase in [2,3]:
-            valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
-            pos_valid = valid.get_rect(midtop=window.get_rect().center)
-            window.blit(valid, pos_valid)
-            pygame.display.flip()
-            pygame.event.get() # clear buffer
-            next_step = False
-            while not next_step:
-                e = pygame.event.wait()
-                if e.type == pl.KEYDOWN and e.key == pl.K_RETURN:
-                    next_step = True
-            cond = str(phase)
-            random.shuffle(stims)
-            for stim in stims:
-                resp, rt = do_trial(stim, window, sounds)
-                if resp == 'Quit':
-                    raise Exception()
-                print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
+        
+##        for phase in [2,3]:
+##            valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
+##            pos_valid = valid.get_rect(midtop=window.get_rect().center)
+##            window.blit(valid, pos_valid)
+##            pygame.display.flip()
+##            pygame.event.get() # clear buffer
+##            next_step = False
+##            while not next_step:
+##                e = pygame.event.wait()
+##                if e.type == pl.KEYDOWN and e.key == pl.K_RETURN:
+##                    next_step = True
+##            cond = str(phase)
+##            random.shuffle(stims)
+##            for stim in stims:
+##                resp, rt = do_trial(stim, window, sounds)
+##                if resp == 'Quit':
+##                    raise Exception()
+##                print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
+
 try:
     expe()
 finally:
