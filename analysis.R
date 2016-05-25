@@ -1,16 +1,45 @@
-data <- read.csv("results/paul_1462814788.csv") # Mettre le nom du fichier à analyser
-View(data)
-expected = rep(0, 33)
+data <- read.csv("1464016580_manu.csv") # Mettre le nom du fichier à analyser
+
+dist = (data$note2 - data$note1)%%12
+data <- cbind(data, dist)
+expected = rep(0, nrow(data))
 expected[(data$note2 - data$note1)%%12 > 6] = -1
 expected[(data$note2 - data$note1)%%12 < 6] = 1
-cbind(data, expected)
 
 data <- cbind(data, expected)
-View(data)
+
+(data$note2 - data$note1)%%12
 same <- data$resp == data$expected
 same[data$expected == 0] = NA
 data <- cbind(data, same)
 
 cat("La réponse était celle attendue dans \n")
-print(mean(data$same, na.rm = TRUE))
-cat("des cas en supprimant les tritons")
+cat(mean(data$same, na.rm = TRUE))
+cat(" des cas en supprimant les tritons\n")
+
+
+tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, data[data$dist != 6 & data$cond >= 2,]$resp)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des réponses en fonction de la note jouée")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, data[data$dist != 6 & data$cond>=2,]$same)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des corresp entre réponse et attendu en fonction de la note jouée")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+#
