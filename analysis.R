@@ -1,4 +1,4 @@
-data <- read.csv("1464016580_manu.csv") # Mettre le nom du fichier à analyser
+data <- read.csv("results/1464016580_manu.csv") # Mettre le nom du fichier à analyser
 
 dist = (data$note2 - data$note1)%%12
 data <- cbind(data, dist)
@@ -18,10 +18,11 @@ cat(mean(data$same, na.rm = TRUE))
 cat(" des cas en supprimant les tritons\n")
 
 
-tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, data[data$dist != 6 & data$cond >= 2,]$resp)
+tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, paste(data[data$dist != 6 & data$cond >= 2,]$resp, data[data$dist != 6 & data$cond >= 2,]$expected, sep=","))
 res = chisq.test(tbl)
 cat("************************\n")
-cat("Table des réponses en fonction de la note jouée")
+cat("Table des réponses en fonction de la note jouée\n")
+cat("Premier nombre: réponse, deuxième: réponse attendue")
 print(tbl)
 print(res)
 if (res$p.value < 0.05) {
@@ -34,6 +35,34 @@ tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, data[data$dist != 6 & 
 res = chisq.test(tbl)
 cat("************************\n")
 cat("Table des corresp entre réponse et attendu en fonction de la note jouée")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+
+tbl = table(data[data$dist == 5,]$note1, data[data$dist == 5,]$resp)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des réponses en fonction de la note jouée (quarte uniquement)\n")
+cat("Premier nombre: réponse, deuxième: réponse attendue")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+
+tbl = table(data[data$dist == 7,]$note1, data[data$dist == 7,]$resp)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des réponses en fonction de la note jouée (quinte uniquement)\n")
+cat("Premier nombre: réponse, deuxième: réponse attendue")
 print(tbl)
 print(res)
 if (res$p.value < 0.05) {
