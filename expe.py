@@ -15,7 +15,7 @@ black = (0, 0, 0)
 
 notes = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']
 nb_stim_per_interval = 3
-source = 'stim/sounds_eb_30'
+source = 'stim/Sounds_press'
 
 
 def get_sounds(source):
@@ -63,7 +63,7 @@ def do_trial(stim, window, sounds):
         pygame.display.flip()
         sound.play()
         start = pygame.time.get_ticks()
-        while pygame.time.get_ticks() - start < 390:
+        while pygame.time.get_ticks() - start < 300:
             pygame.time.wait(15)
         sound.stop()
         window.fill(black)
@@ -122,7 +122,7 @@ def expe():
 
         cond = '1'
         stims1 = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11]) #24
-        stims2 = gen_all_stim(3, list(range(12)), [5, 6, 7])  #108
+        stims2 = gen_all_stim(8, list(range(12)), [5, 6, 7])  #108
         all_stims=stims1+stims2
         random.shuffle(all_stims)
         nb_stim=len(all_stims)  #132
