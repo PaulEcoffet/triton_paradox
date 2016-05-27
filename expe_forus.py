@@ -100,7 +100,7 @@ def expe():
     font = pygame.font.SysFont('sans', 40)
 
 
-    with open('results/fot_us/'+str(int(time.time()))+'_'+subject+'.csv', 'w') as f:
+    with open('results/for_us/'+str(int(time.time()))+'_'+subject+'.csv', 'w') as f:
     ###########
     # PHASE 1 #
     ###########
