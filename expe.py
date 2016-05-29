@@ -104,7 +104,7 @@ def expe():
     ###########
     # PHASE 1 #
     ###########
-    
+
         window.fill(black)
         blabla = font.render("Appuyer sur 'f' si l'intervalle est descendant, sur 'j' s'il est montant", True, white)
         valid = font.render("Veuillez appuyer sur entree quand vous etes pret", True, white)
@@ -122,7 +122,7 @@ def expe():
 
         cond = '1'
         stims1 = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11]) #24
-        stims2 = gen_all_stim(8, list(range(12)), [5, 6, 7])  #108
+        stims2 = gen_all_stim(4, list(range(12)), [5, 6, 7])  #108
         all_stims=stims1+stims2
         random.shuffle(all_stims)
         nb_stim=len(all_stims)  #132
@@ -150,7 +150,7 @@ def expe():
     ###########
     # PHASE 2 #
     ###########
-        
+
 ##        for phase in [2,3]:
 ##            valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
 ##            pos_valid = valid.get_rect(midtop=window.get_rect().center)

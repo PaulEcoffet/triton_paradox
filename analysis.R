@@ -1,4 +1,12 @@
-data <- read.csv("results/1464016580_manu.csv") # Mettre le nom du fichier à analyser
+rm(list = ls())
+library(tcltk)
+
+file_names = tk_choose.files()
+data <- data.frame()
+for (file_name in file_names) {
+  ldata <- read.csv(file_name) # Mettre le nom du fichier à analyser
+  data <- rbind(data, ldata)
+}
 
 dist = (data$note2 - data$note1)%%12
 data <- cbind(data, dist)
@@ -8,7 +16,6 @@ expected[(data$note2 - data$note1)%%12 < 6] = 1
 
 data <- cbind(data, expected)
 
-(data$note2 - data$note1)%%12
 same <- data$resp == data$expected
 same[data$expected == 0] = NA
 data <- cbind(data, same)
@@ -17,8 +24,13 @@ cat("La réponse était celle attendue dans \n")
 cat(mean(data$same, na.rm = TRUE))
 cat(" des cas en supprimant les tritons\n")
 
+heared_raising = data$resp == 1
+data <- cbind(data, heared_raising)
+mean_for_plot = aggregate(heared_raising ~ dist, data, mean)
+plot(mean_for_plot, type="l", main="ratio montant en fonction de distance")
 
-tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, paste(data[data$dist != 6 & data$cond >= 2,]$resp, data[data$dist != 6 & data$cond >= 2,]$expected, sep=","))
+
+tbl = table(data[data$dist == 5 | data$dist == 7,]$note1, paste(data[data$dist == 5 | data$dist == 7,]$resp, data[data$dist == 5 | data$dist == 7,]$expected, sep=","))
 res = chisq.test(tbl)
 cat("************************\n")
 cat("Table des réponses en fonction de la note jouée\n")
@@ -31,7 +43,7 @@ if (res$p.value < 0.05) {
   cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
 }
 
-tbl = table(data[data$dist != 6 & data$cond >= 2,]$note1, data[data$dist != 6 & data$cond>=2,]$same)
+tbl = table(data[data$dist == 5 | data$dist == 7,]$note1, data[data$dist == 5 | data$dist == 7,]$same)
 res = chisq.test(tbl)
 cat("************************\n")
 cat("Table des corresp entre réponse et attendu en fonction de la note jouée")
