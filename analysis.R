@@ -109,6 +109,26 @@ if (res$p.value < 0.05) {
   cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
 }
 
+## Calcul de l'horloge supposée
+trit_mean = aggregate(heared_raising ~ note1, data[data$dist == 6,], mean)
+plot(trit_mean, type="l")
+best = NA
+score_best = 0
+for (i in 0:5) {
+  prv = (i - 1)%%12
+  nxt = (i + 1)%%12
+  score = abs(trit_mean[trit_mean$note1 == prv,]$heared_raising - trit_mean[trit_mean$note1 == nxt,]$heared_raising)
+  prv = (i + 5)%%12
+  nxt = (i + 7)%%12
+  score = score + abs(trit_mean[trit_mean$note1 == prv,]$heared_raising - trit_mean[trit_mean$note1 == nxt,]$heared_raising)
+  print(paste(i, "score:", score))
+  if (score > score_best) {
+    best = i
+    score_best = score
+  }
+}
+
+print(paste("frontiere raising is at", best, "-", best+6))
 
 #
 #
