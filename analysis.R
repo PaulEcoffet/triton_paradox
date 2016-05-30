@@ -83,4 +83,32 @@ if (res$p.value < 0.05) {
   cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
 }
 
+tbl = table(data[data$dist == 6,]$note1, data[data$dist == 6,]$resp)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des réponses en fonction de la note jouée (triton uniquement)\n")
+cat("Premier nombre: réponse, deuxième: réponse attendue")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+tbl = table(data[data$dist >= 5 & data$dist <= 7,]$note1, data[data$dist >= 5 & data$dist <= 7,]$resp)
+res = chisq.test(tbl)
+cat("************************\n")
+cat("Table des réponses en fonction de la note jouée (quarte, quinte et triton uniquement)\n")
+cat("Premier nombre: réponse, deuxième: réponse attendue")
+print(tbl)
+print(res)
+if (res$p.value < 0.05) {
+  cat("Il y a dépendance entre la note jouée et la direction de l'intervalle\n")
+} else {
+  cat("Il y a indépendance entre la note jouée et la direction de l'intervalle\n")
+}
+
+
+#
 #
