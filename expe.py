@@ -90,6 +90,7 @@ def do_trial(stim, window, sounds):
 
 def expe():
     subject = raw_input("subject> ")
+    niveau=raw_input("Combien d'annees de musique avez vous fait? > ")
     #cond = raw_input("condition [f]: plat, [c]: cloche> ")
     #cond = 'c'  # TODO Implement different conditions
     pygame.mixer.pre_init(44100,-16,2, 1024)
@@ -122,18 +123,19 @@ def expe():
 
         cond = '1'
         stims1 = gen_stim(nb_stim_per_interval, [1, 2, 3, 4, 8, 9, 10, 11]) #24
-        stims2 = gen_all_stim(4, list(range(12)), [5, 6, 7])  #108
-        all_stims=stims1+stims2
+        stims2 = gen_all_stim(7, list(range(12)), [5, 7])  #108
+        stims3 = gen_all_stim(5, list(range(12)), [6])
+        all_stims=stims1+stims2+stims3
         random.shuffle(all_stims)
         nb_stim=len(all_stims)  #132
-        print ('subject', 'cond', 'note1', 'note2', 'resp', 'rt', sep=',', file=f)
+        print ('subject', 'cond', 'note1', 'note2', 'resp', 'rt','niveau', sep=',', file=f)
         i=0
         for stim in all_stims:
             i=i+1
             resp, rt = do_trial(stim, window, sounds)
             if resp == 'Quit':
                 raise Exception()
-            print (subject, cond, stim[0], stim[1], resp, rt, file=f, sep=',')
+            print (subject, cond, stim[0], stim[1], resp, rt,niveau, file=f, sep=',')
             if i == nb_stim/3+1:
                 valid = font.render("Ptite pause, appuyez sur entree quand vous etes pret", True, white)
                 pos_valid = valid.get_rect(midtop=window.get_rect().center)
