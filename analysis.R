@@ -27,7 +27,7 @@ cat(" des cas en supprimant les tritons\n")
 heared_raising = data$resp == 1
 data <- cbind(data, heared_raising)
 mean_for_plot = aggregate(heared_raising ~ dist, data, mean)
-plot(mean_for_plot, type="l", main="ratio montant en fonction de distance")
+plot(mean_for_plot, type="l", main="ratio montant en fonction de distance", ylim=c(-0.1, 1.1))
 
 
 tbl = table(data[data$dist == 5 | data$dist == 7,]$note1, paste(data[data$dist == 5 | data$dist == 7,]$resp, data[data$dist == 5 | data$dist == 7,]$expected, sep=","))
@@ -111,7 +111,7 @@ if (res$p.value < 0.05) {
 
 ## Calcul de l'horloge supposée
 trit_mean = aggregate(heared_raising ~ note1, data[data$dist == 6,], mean)
-plot(trit_mean, type="l")
+plot(trit_mean, type="l", ylim=c(-0.1, 1.1))
 best = NA
 score_best = 0
 for (i in 0:5) {
