@@ -54,13 +54,13 @@ data = cbind(data, angles)
 for (d in c(5, 6, 7)) {
   cat("\n\n")
   cat(paste("******** intervalle:", d, "********\n"))
-  c = data[data$dist==d,]
-  mean = circ.mean(c$angles)
-  disp = circ.disp(c$angles)
+  cur = data[data$dist==d,]
+  mean_angle = circ.mean(cur$angles)
+  disp = circ.disp(cur$angles)
   rbar = disp$rbar
-  cat(paste("angle moyen:", mean, "\n"))
+  cat(paste("angle moyen:", mean_angle, "\n"))
   print(disp)
-  test = r.test(c$angles)
+  test = r.test(cur$angles)
   print(test)
   if (test$p.value > 0.05) {
     cat("\\\\ L'effet n'est pas significatif //\n")
@@ -70,9 +70,33 @@ for (d in c(5, 6, 7)) {
   
   ### PLOTTING ###
   # +1/1000 because circ.plot bugs if angles are at a 0 value
-  circ.plot(c$angles+1/1000, stack=TRUE, bins=360, shrink=1.5, main=paste("horloge pour", d))
-  arrows(0, 0, rbar*cos(mean), rbar*sin(mean))
+  circ.plot(cur$angles+1/1000, stack=TRUE, bins=360, shrink=5.5, main=paste("horloge pour", d))
+  arrows(0, 0, rbar*cos(mean_angle), rbar*sin(mean_angle))
+  abline(0, -cos(mean_angle)/sin(mean_angle))
   text(0.9*cos(angles_i), 0.9*sin(angles_i), notes_name)
   dev.print(png, width=800, file=paste("/tmp/graph_", d, ".png",sep=""));
 
 }
+
+print("lol")
+
+trit_mean = aggregate(heared_raising ~ note1, data[data$dist == 6,], mean)
+plot(trit_mean, type="l", ylim=c(-0.1, 1.1))
+
+best = NA
+score_best = 0
+for (i in 0:5) {
+  prv = (i - 1)%%12
+  nxt = (i + 1)%%12
+  score = abs(trit_mean[trit_mean$note1 == prv,]$heared_raising - trit_mean[trit_mean$note1 == nxt,]$heared_raising)
+  prv = (i + 5)%%12
+  nxt = (i + 7)%%12
+  score = score + abs(trit_mean[trit_mean$note1 == prv,]$heared_raising - trit_mean[trit_mean$note1 == nxt,]$heared_raising)
+  print(paste(i, "score:", score))
+  if (score > score_best) {
+    best = i
+    score_best = score
+  }
+}
+
+print(paste("frontiere raising is at", notes_name[best+1], "-", notes_name[best+7]))
